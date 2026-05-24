@@ -32,7 +32,7 @@ export function AssignmentListPage() {
           <div className="mt-12 rounded-lg border border-red-800 bg-red-950/30 p-6 text-center">
             <p className="text-red-400">
               {error && "status" in error
-                ? `Error ${error.status}: ${"data" in error && error.data && typeof error.data === "object" && "message" in error.data ? String((error.data as Record<string, unknown>).message) : "Failed to load assignments"}`
+                ? `Error ${error.status}: ${"data" in error && error.data && typeof error.data === "object" && "error" in error.data ? String((error.data as Record<string, unknown>).error) : "Failed to load assignments"}`
                 : "Failed to load assignments"}
             </p>
           </div>

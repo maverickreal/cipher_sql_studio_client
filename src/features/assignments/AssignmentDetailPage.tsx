@@ -11,7 +11,11 @@ import { Link } from "react-router";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../hooks/useAuth";
 
-const difficultyVariant: Record<string, "success" | "warning" | "danger"> = { easy: "success", medium: "warning", hard: "danger" };
+const difficultyVariant: Record<string, "success" | "warning" | "danger"> = {
+  easy: "success",
+  medium: "warning",
+  hard: "danger",
+};
 
 export function AssignmentDetailPage() {
   useAuth();
@@ -22,7 +26,9 @@ export function AssignmentDetailPage() {
 
   const user = useSelector((state: RootState) => state.auth.user);
   const execution = useSelector((state: RootState) => state.execution);
-  const sessionReady = useSelector((state: RootState) => state.auth.sessionReady);
+  const sessionReady = useSelector(
+    (state: RootState) => state.auth.sessionReady,
+  );
 
   if (!id) {
     return (
@@ -51,11 +57,15 @@ export function AssignmentDetailPage() {
                   {data.assignment.title}
                 </h1>
                 <div className="mt-2 flex items-center gap-2">
-                  <Badge variant={difficultyVariant[data.assignment.difficulty]}>
+                  <Badge
+                    variant={difficultyVariant[data.assignment.difficulty]}
+                  >
                     {data.assignment.difficulty}
                   </Badge>
                   <Badge variant="default">
-                    {data.assignment.mode === "read" ? "SELECT only" : "Read & Write"}
+                    {data.assignment.mode === "read"
+                      ? "SELECT only"
+                      : "Read & Write"}
                   </Badge>
                 </div>
               </div>
@@ -113,16 +123,6 @@ export function AssignmentDetailPage() {
                     <p className="text-sm text-red-400">{execution.error}</p>
                   </div>
                 )}
-
-                {execution.phase === "done" &&
-                  !execution.result?.success &&
-                  "error" in (execution.result ?? {}) && (
-                    <div className="mt-6 rounded-lg border border-red-800 bg-red-950/30 p-4">
-                      <p className="text-sm text-red-400">
-                        {(execution.result as { error: string }).error}
-                      </p>
-                    </div>
-                  )}
               </div>
             ) : (
               <div className="mt-8 rounded-lg border border-surface-800 bg-surface-900/50 p-6 text-center">

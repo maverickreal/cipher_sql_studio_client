@@ -25,11 +25,29 @@ export function Table({ columns, rows }: TableProps) {
               key={i}
               className="border-b border-surface-800/50 last:border-0 hover:bg-surface-900/50 transition-colors"
             >
-              {columns.map((col) => (
-                <td key={col} className="px-4 py-2 font-mono text-surface-200">
-                  {String(row[col] ?? "NULL")}
-                </td>
-              ))}
+              {columns.map((col) => {
+                const val = row[col];
+                let displayVal: string;
+                if (val === null || val === undefined) {
+                  displayVal = "NULL";
+                } else if (typeof val === "object") {
+                  try {
+                    displayVal = JSON.stringify(val);
+                  } catch {
+                    displayVal = String(val);
+                  }
+                } else {
+                  displayVal = String(val);
+                }
+                return (
+                  <td
+                    key={col}
+                    className="px-4 py-2 font-mono text-surface-200"
+                  >
+                    {displayVal}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

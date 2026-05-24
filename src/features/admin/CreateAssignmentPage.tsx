@@ -8,6 +8,7 @@ import { PageTransition } from "../../components/PageTransition";
 import { useCreateAssignmentMutation } from "../../store/api";
 import type { RootState } from "../../store";
 import { z } from "zod";
+import { getErrorMessage } from "../../utils/errors";
 
 const createAssignmentSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
@@ -95,12 +96,7 @@ export function CreateAssignmentPage() {
       await createAssignment(payload).unwrap();
       navigate("/assignments");
     } catch (err) {
-      const message =
-        err && typeof err === "object" && "data" in err
-          ? String(
-              (err as { data: unknown }).data || "Failed to create assignment",
-            )
-          : "Failed to create assignment";
+      const message = getErrorMessage(err, "Failed to create assignment");
       setServerError(message);
     }
   };

@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
+import {
+  EditorView,
+  keymap,
+  lineNumbers,
+  highlightActiveLine,
+} from "@codemirror/view";
 import { sql, PostgreSQL } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import type { Assignment } from "../../types";
 import { Button } from "../../components/ui/Button";
-import {
-  useExecuteSqlMutation,
-  useGetJobStatusQuery,
-} from "../../store/api";
+import { useExecuteSqlMutation, useGetJobStatusQuery } from "../../store/api";
 import {
   executionStarted,
   executionCompleted,
@@ -17,6 +19,7 @@ import {
   resetExecution,
 } from "./executionSlice";
 import type { RootState, AppDispatch } from "../../store";
+import { getErrorMessage } from "../../utils/errors";
 
 interface SqlEditorProps {
   assignment: Assignment;
@@ -27,16 +30,17 @@ export function SqlEditor({ assignment }: SqlEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
 
-  const { phase, taskId } = useSelector(
-    (state: RootState) => state.execution,
-  );
+  const { phase, taskId } = useSelector((state: RootState) => state.execution);
 
   const [executeSql, { isLoading: isExecuting }] = useExecuteSqlMutation();
 
-  const { data: jobStatus } = useGetJobStatusQuery(taskId!, {
-    skip: !taskId || phase !== "polling",
-    pollingInterval: 1000,
-  });
+  const { data: jobStatus, error: pollingError } = useGetJobStatusQuery(
+    taskId!,
+    {
+      skip: !taskId || phase !== "polling",
+      pollingInterval: 1000,
+    },
+  );
 
   useEffect(() => {
     if (jobStatus && phase === "polling") {
@@ -53,6 +57,16 @@ export function SqlEditor({ assignment }: SqlEditorProps) {
       }
     }
   }, [jobStatus, phase, dispatch]);
+
+  useEffect(() => {
+    if (pollingError && phase === "polling") {
+      const message = getErrorMessage(
+        pollingError,
+        "Failed to check execution status",
+      );
+      dispatch(executionFailed(message));
+    }
+  }, [pollingError, phase, dispatch]);
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -111,13 +125,7 @@ export function SqlEditor({ assignment }: SqlEditorProps) {
 
       dispatch(executionStarted(result.taskId));
     } catch (err) {
-      const message =
-        err && typeof err === "object" && "data" in err
-          ? String(
-              (err as { data: unknown }).data ||
-                "Failed to execute SQL",
-            )
-          : "Failed to execute SQL";
+      const message = getErrorMessage(err, "Failed to execute SQL");
       dispatch(executionFailed(message));
     }
   }, [assignment, executeSql, dispatch]);
@@ -130,7 +138,8 @@ export function SqlEditor({ assignment }: SqlEditorProps) {
             SQL Editor
           </span>
           <span className="text-xs text-surface-600">
-            PostgreSQL · {assignment.mode === "read" ? "Read only" : "Read/Write"}
+            PostgreSQL ·{" "}
+            {assignment.mode === "read" ? "Read only" : "Read/Write"}
           </span>
         </div>
         <div ref={editorRef} className="cm-editor-container" />
