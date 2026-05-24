@@ -27,7 +27,7 @@ export function SignInPage() {
     const result = signInSchema.safeParse({ email, password });
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
@@ -85,9 +85,7 @@ export function SignInPage() {
             autoComplete="current-password"
           />
 
-          {serverError && (
-            <p className="text-sm text-red-400">{serverError}</p>
-          )}
+          {serverError && <p className="text-sm text-red-400">{serverError}</p>}
 
           <Button type="submit" loading={loading} className="w-full">
             Sign In

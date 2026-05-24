@@ -25,11 +25,15 @@ const createAssignmentSchema = z.object({
 export function CreateAssignmentPage() {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
-  const sessionReady = useSelector((state: RootState) => state.auth.sessionReady);
+  const sessionReady = useSelector(
+    (state: RootState) => state.auth.sessionReady,
+  );
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("easy");
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
+    "easy",
+  );
   const [mode, setMode] = useState<"read" | "write">("read");
   const [sampleInput, setSampleInput] = useState("");
   const [sampleOutput, setSampleOutput] = useState("");
@@ -76,7 +80,7 @@ export function CreateAssignmentPage() {
 
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
         fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
@@ -93,7 +97,9 @@ export function CreateAssignmentPage() {
     } catch (err) {
       const message =
         err && typeof err === "object" && "data" in err
-          ? String((err as { data: unknown }).data || "Failed to create assignment")
+          ? String(
+              (err as { data: unknown }).data || "Failed to create assignment",
+            )
           : "Failed to create assignment";
       setServerError(message);
     }
@@ -148,9 +154,7 @@ export function CreateAssignmentPage() {
               </label>
               <select
                 value={mode}
-                onChange={(e) =>
-                  setMode(e.target.value as "read" | "write")
-                }
+                onChange={(e) => setMode(e.target.value as "read" | "write")}
                 className="rounded-lg border border-surface-700 bg-surface-900 px-3 py-2 text-sm text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="read">Read (SELECT only)</option>
