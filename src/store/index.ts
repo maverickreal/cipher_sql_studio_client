@@ -1,16 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { api } from "./api";
 import authReducer from "../features/auth/authSlice";
 import executionReducer from "../features/sql-editor/executionSlice";
+import { api } from "./api";
 
 export const store = configureStore({
-  reducer: {
-    [api.reducerPath]: api.reducer,
-    auth: authReducer,
-    execution: executionReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+	reducer: {
+		[api.reducerPath]: api.reducer,
+		auth: authReducer,
+		execution: executionReducer,
+	},
+	middleware: (getDefaultMiddleware) =>
+		getDefaultMiddleware().concat(api.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

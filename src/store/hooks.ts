@@ -1,1 +1,1 @@
-export type { RootState, AppDispatch } from "./index";
+export type { AppDispatch, RootState } from "./index";
