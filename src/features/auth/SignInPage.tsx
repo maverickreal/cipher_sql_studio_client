@@ -62,7 +62,7 @@ export function SignInPage() {
 			>
 				<h1 className="font-bold text-2xl text-white">Sign In</h1>
 				<p className="mt-1 text-sm text-surface-400">
-					Welcome back to Cipher SQL Studio
+					Welcome back to M SQL Studio
 				</p>
 
 				<form onSubmit={handleSubmit} className="mt-8 space-y-4">
