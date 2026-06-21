@@ -8,19 +8,22 @@ import type {
 } from "../types";
 
 export const api = createApi({
-	reducerPath: "api",
+  reducerPath: "api",
+	
 	baseQuery: fetchBaseQuery({
-		baseUrl: "/api/v1",
+		baseUrl: import.meta.env.VITE_API_BASE_URL,
 		credentials: "include",
-	}),
-	tagTypes: ["Assignments", "Assignment"],
+  }),
+	
+  tagTypes: ["Assignments", "Assignment"],
+	
 	endpoints: (builder) => ({
 		getAssignments: builder.query<
 			{ assignments: Assignment[] },
 			{ page?: number; limit?: number }
 		>({
 			query: ({ page = 1, limit = 20 } = {}) =>
-				`/assignments?page=${page}&limit=${limit}`,
+				`api/v1/assignments?page=${page}&limit=${limit}`,
 			providesTags: ["Assignments"],
 		}),
 
